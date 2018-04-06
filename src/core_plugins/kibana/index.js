@@ -93,14 +93,14 @@ export default function (kibana) {
           subUrlBase: `${kbnBaseUrl}#/dashboard`,
           description: 'compose visualizations for much win',
           icon: 'plugins/kibana/assets/dashboard.svg',
-        }, *//*{
+        }, */{
           id: 'kibana:dev_tools',
           title: 'Dev Tools',
           order: 9001,
           url: '/app/kibana#/dev_tools',
           description: 'development tools',
           icon: 'plugins/kibana/assets/wrench.svg'
-        },*/ {
+        }, {
           id: 'kibana:management',
           title: '설정',
           order: 9003,
