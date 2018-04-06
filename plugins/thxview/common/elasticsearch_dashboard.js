@@ -149,7 +149,7 @@ export const topNDashBoard = () => {
     "body": {
       "size": 0,
       "_source": {
-        "excludes ": []
+        "excludes": []
       },
       "aggs": {
         "2": {
