@@ -71,66 +71,56 @@ export const chartPatternDashBoard = () => {
         "excludes": []
       },
       "aggs": {
-        "chart_by_pattern": {
+        "histogram_sum": {
           "date_histogram": {
             "field": "@timestamp",
-            "interval": "1d",
-            "time_zone": "Asia/Tokyo",
+            "interval": "1h",
+            "time_zone": "Asia/Seoul",
             "min_doc_count": 1
           },
           "aggs": {
-            "sum_email": {
-              "sum": {
-                "field": "detected_count.email"
-              }
-            },
-            "sum_jumin": {
-              "sum": {
-                "field": "detected_count.jumin"
-              }
-            },
-            "sum_phone": {
-              "sum": {
-                "field": "detected_count.phone"
+            "nested_sum": {
+              "nested": {
+                "path": "detected"
+              },
+              "aggs": {
+                "total_sum": {
+                  "terms": {
+                    "field": "detected.pattern.keyword",
+                    "size": 5,
+                    "order": {
+                      "pattern_sum": "desc"
+                    }
+                  },
+                  "aggs": {
+                    "pattern_sum": {
+                      "sum": {
+                        "field": "detected.count"
+                      }
+                    }
+                  }
+                }
               }
             }
-          }
-        },
-        "total_email": {
-          "sum": {
-            "field": "detected_count.email"
-          }
-        },
-        "total_jumin": {
-          "sum": {
-            "field": "detected_count.jumin"
-          }
-        },
-        "total_phone": {
-          "sum": {
-            "field": "detected_count.phone"
           }
         }
       },
       "stored_fields": ["*"],
-      "script_fields": {},
-      "docvalue_fields": ["@timestamp",
-        "http.response.headers.X-Api-Version",
-        "tls.server_certificate.not_after",
-        "tls.server_certificate.not_before",
-        "tls.server_certificate_chain.not_after",
-        "tls.server_certificate_chain.not_before"],
+      "script_fields": {
+      },
       "query": {
         "bool": {
           "must": [{
-            "match_all": {}
+            "match_all": {
+            }
           },
             {
               "range": {
                 "@timestamp": {
-                  "gte": 1519830000000,
-                  "lte": 1522508399999,
-                  "format": "epoch_millis"
+                  "gte": "2018-04-07||/d",
+                  "lte": "2018-04-07||/d",
+                  "format": "yyyy-MM-dd",
+                  "time_zone": "Asia/Seoul"
                 }
               }
             }],
@@ -223,40 +213,32 @@ export const topNPatternDashBoard = () => {
         "excludes": []
       },
       "aggs": {
-        "email": {
-          "stats": {
-            "field": "detected_count.email"
+        "nested_sum": {
+          "nested": {
+            "path": "detected"
           },
-          "meta": {
-            "name": "이메일"
-          }
-        },
-        "jumin": {
-          "stats": {
-            "field": "detected_count.jumin"
-          },
-          "meta": {
-            "name": "주민번호"
-          }
-        },
-        "phone": {
-          "stats": {
-            "field": "detected_count.phone"
-          },
-          "meta": {
-            "name": "전화번호"
+          "aggs": {
+            "total_sum": {
+              "terms": {
+                "field": "detected.pattern.keyword",
+                "size": 5,
+                "order": {
+                  "pattern_sum.sum": "desc"
+                }
+              },
+              "aggs": {
+                "pattern_sum": {
+                  "stats": {
+                    "field": "detected.count"
+                  }
+                }
+              }
+            }
           }
         }
-
       },
       "stored_fields": ["*"],
       "script_fields": {},
-      "docvalue_fields": ["@timestamp",
-        "http.response.headers.X-Api-Version",
-        "tls.server_certificate.not_after",
-        "tls.server_certificate.not_before",
-        "tls.server_certificate_chain.not_after",
-        "tls.server_certificate_chain.not_before"],
       "query": {
         "bool": {
           "must": [{
@@ -265,9 +247,10 @@ export const topNPatternDashBoard = () => {
             {
               "range": {
                 "@timestamp": {
-                  "gte": 1521903600000,
-                  "lte": 1521989999999,
-                  "format": "epoch_millis"
+                  "gte": "2018-04-07||/d",
+                  "lte": "2018-04-07||/d",
+                  "format": "yyyy-MM-dd",
+                  "time_zone": "Asia/Seoul"
                 }
               }
             }],

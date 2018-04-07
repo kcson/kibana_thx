@@ -66,7 +66,7 @@ export default function (server) {
       rangeFilter.range['@timestamp'].time_zone = req.payload.timeZone;
       rangeFilter.range['@timestamp'].format = req.payload.format;
 
-      const aggFilter = CHART_PATTERN_DASHBOARD.body.aggs["chart_by_pattern"];//["interval_sum"]["date_histogram"]
+      const aggFilter = CHART_PATTERN_DASHBOARD.body.aggs["histogram_sum"];//["interval_sum"]["date_histogram"]
       aggFilter.date_histogram.interval = req.payload.interval;
       aggFilter.date_histogram.time_zone = req.payload.timeZone;
 
@@ -125,6 +125,8 @@ export default function (server) {
       rangeFilter.range['@timestamp'].lte = req.payload.toDate;
       rangeFilter.range['@timestamp'].time_zone = req.payload.timeZone;
       rangeFilter.range['@timestamp'].format = req.payload.format;
+
+      TOPN_PATTERN_DASHBOARD.body.aggs.nested_sum.aggs.total_sum.terms.size = req.payload.size;
 
       console.log(TOPN_PATTERN_DASHBOARD.body.aggs);
 

@@ -111,45 +111,31 @@ export default class ChangeChartByPattern extends React.Component {
       }
     }).then(
       (res) => {
-        const emailLineData = [];
-        const juminLineData = [];
-        const phoneLineData = [];
-        for (let i = 0; i < chartDatas.labels.length; i++) {
-          emailLineData.push(0);
-          juminLineData.push(0);
-          phoneLineData.push(0);
-        }
-        res.data.aggregations["chart_by_pattern"].buckets.map((bucket, index) => {
+        const chartDataObj = {};
+        res.data.aggregations["histogram_sum"].buckets.map((bucket, i) => {
           const key = moment(bucket.key).format(keyFormat);
           const keyIndex = chartDatas.labels.indexOf(key);
-          if (keyIndex !== -1) {
-            if (bucket.sum_email.value > 0) {
-              emailLineData[keyIndex] = bucket.sum_email.value;
+          bucket.nested_sum.total_sum.buckets.map((pBucket, j) => {
+            const pKey = pBucket.key;
+            const pChartData = chartDataObj[pKey];
+            if(!pChartData) {
+              chartDataObj[pKey] = [];
+              for (let i = 0; i < chartDatas.labels.length; i++) {
+                chartDataObj[pKey].push(0);
+              }
             }
-
-            if (bucket.sum_jumin.value > 0) {
-              juminLineData[keyIndex] = bucket.sum_jumin.value;
-            }
-
-            if (bucket.sum_phone.value > 0) {
-              phoneLineData[keyIndex] = bucket.sum_phone.value;
-            }
-          }
-
-          //emailLineData.push(bucket.sum_email.value);
-          //juminLineData.push(bucket.sum_jumin.value);
-          //phoneLineData.push(bucket.sum_phone.value);
-
-          console.log(bucket)
+            chartDataObj[pKey][keyIndex] = pBucket.pattern_sum.value;
+          });
         });
 
-        if (res.data.aggregations.total_email.value > 0) {
+        const objKeys = Object.keys(chartDataObj);
+        objKeys.map((objKey,index) => {
           chartDatas.datasets.push({
-            label: "이메일",
+            label: objKey,
             fill: false,
             lineTension: 0.5,
-            backgroundColor: this.getColor(12),//'rgba(75,192,192,0.4)',
-            borderColor: this.getColor(12),//'#8e5ea2',//'rgba(75,192,192,1)',
+            backgroundColor: this.getColor(10-index),//'rgba(75,192,192,0.4)',
+            borderColor: this.getColor(10-index),//'#8e5ea2',//'rgba(75,192,192,1)',
             borderCapStyle: 'butt',
             borderDash: [],
             borderDashOffset: 0.0,
@@ -159,65 +145,14 @@ export default class ChangeChartByPattern extends React.Component {
             pointBackgroundColor: '#fff',
             pointBorderWidth: 2,
             pointHoverRadius: 3,
-            pointHoverBackgroundColor: this.getColor(12),
+            pointHoverBackgroundColor: this.getColor(10-index),
             //pointHoverBorderColor: 'rgba(220,220,220,1)',
             pointHoverBorderWidth: 2,
             pointRadius: 1,
             pointHitRadius: 10,
-            data: emailLineData
+            data: chartDataObj[objKey]
           });
-        }
-
-        if (res.data.aggregations.total_jumin.value > 0) {
-          chartDatas.datasets.push({
-            label: "주민번호",
-            fill: false,
-            lineTension: 0.5,
-            backgroundColor: this.getColor(11),//'rgba(75,192,192,0.4)',
-            borderColor: this.getColor(11),//'#8e5ea2',//'rgba(75,192,192,1)',
-            borderCapStyle: 'butt',
-            borderDash: [],
-            borderDashOffset: 0.0,
-            borderJoinStyle: 'miter',
-            borderWidth: 2,
-            //pointBorderColor: this.getColor(index),
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointHoverRadius: 3,
-            pointHoverBackgroundColor: this.getColor(11),
-            //pointHoverBorderColor: 'rgba(220,220,220,1)',
-            pointHoverBorderWidth: 2,
-            pointRadius: 1,
-            pointHitRadius: 10,
-            data: juminLineData
-          });
-        }
-
-        if (res.data.aggregations.total_phone.value > 0) {
-          chartDatas.datasets.push({
-            label: "전화번호",
-            fill: false,
-            lineTension: 0.5,
-            backgroundColor: this.getColor(10),//'rgba(75,192,192,0.4)',
-            borderColor: this.getColor(10),//'#8e5ea2',//'rgba(75,192,192,1)',
-            borderCapStyle: 'butt',
-            borderDash: [],
-            borderDashOffset: 0.0,
-            borderJoinStyle: 'miter',
-            borderWidth: 2,
-            //pointBorderColor: this.getColor(index),
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 2,
-            pointHoverRadius: 3,
-            pointHoverBackgroundColor: this.getColor(10),
-            //pointHoverBorderColor: 'rgba(220,220,220,1)',
-            pointHoverBorderWidth: 2,
-            pointRadius: 1,
-            pointHitRadius: 10,
-            data: phoneLineData
-          });
-        }
-
+        });
         this.setState({chartDatas: chartDatas});
       },
       (err) => {

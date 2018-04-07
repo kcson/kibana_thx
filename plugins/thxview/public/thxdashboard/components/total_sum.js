@@ -32,7 +32,7 @@ export default class TotalSum extends React.Component {
     }
   }
 
-  fetchData() { 
+  fetchData() {
     const currentDate = new Date();
     let fromDate = moment(currentDate).format('YYYY-MM-DD') + '||/d';
     let toDate = moment(currentDate).format('YYYY-MM-DD') + '||/d';
@@ -96,5 +96,5 @@ export default class TotalSum extends React.Component {
 
 TotalSum.propTypes = {
   httpClient: PropTypes.func.isRequired,
-  refreshInterval: PropTypes.number.isrequired
+  refreshInterval: PropTypes.string.isRequired
 };

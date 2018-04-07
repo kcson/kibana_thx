@@ -87,28 +87,14 @@ export default class TopTableByPattern extends React.Component {
       (res) => {
         const rows = [];
         const aggrs = res.data.aggregations;
-        const keys = Object.keys(aggrs);
-        keys.map((key, index) => {
-          const aggr = aggrs[key];
-          if (aggr.count === 0) {
-            return;
-          }
-
+        aggrs.nested_sum.total_sum.buckets.map((bucket,index) => {
           rows.push({
-            pattern: aggr.meta.name,
-            sum: aggr.sum,
-            avg: aggr.avg.toFixed(2),
-            min: aggr.min,
-            max: aggr.max
+            pattern: bucket.key,
+            sum: bucket.pattern_sum.sum,
+            avg: bucket.pattern_sum.avg.toFixed(2),
+            min: bucket.pattern_sum.min,
+            max: bucket.pattern_sum.max
           });
-        });
-
-        rows.sort((a, b) => {
-          if (a.sum > b.sum) {
-            return -1;
-          } else {
-            return 1;
-          }
         });
         this.setState({rows: rows});
       },
