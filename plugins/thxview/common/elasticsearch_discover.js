@@ -14,7 +14,7 @@ export const searchDiscover = () => {
         "client_ip",
         "path",
         "detected",
-        //"http.response.body"
+        "detected_count.total"
       ],
       "query": {
         "bool": {
@@ -33,9 +33,10 @@ export const searchDiscover = () => {
               "match": {
                 "http.response.body": {
                   "query": "",
-                  "fuzziness": 2,
+                  "fuzziness": 0,
                   "zero_terms_query": "all",
-                  "boost": 2.0
+                  "boost": 2.0,
+                  "operator" : "and"
                 }
               }
             },

@@ -162,6 +162,15 @@ export default class ThxDiscoverHome extends React.Component {
             hit._source.detected = []
           }
 
+          let policyName = "";
+          hit._source.detected.map((detectedData, index) => {
+            if (index === hit._source.detected.length - 1) {
+              policyName = policyName + detectedData.pattern
+            } else {
+              policyName = policyName + detectedData.pattern + "/"
+            }
+          });
+
           results.push({
             id: hit._id,
             cells: [
@@ -173,13 +182,17 @@ export default class ThxDiscoverHome extends React.Component {
                 content: hit._source.ip,
                 title: hit._source.ip
               },
-              '정책1',
+              {
+                content: policyName,
+                title: policyName
+              },
               {
                 content: path,
                 title: path
               },
               {
-                content: '1',
+                //content: 1,
+                content: hit._source["detected_count"].total,
                 textAlign: RIGHT_ALIGNMENT
               },
               {
@@ -282,8 +295,8 @@ export default class ThxDiscoverHome extends React.Component {
         <col/>
         <col/>
         <col/>
-        <col/>
-        <col style={{width: '15%'}}/>
+        <col style={{width: '13%'}}/>
+        <col style={{width: '13%'}}/>
         <col style={{width: '8%'}}/>
         <col/>
       </colgroup>
