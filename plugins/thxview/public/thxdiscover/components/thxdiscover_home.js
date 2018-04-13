@@ -66,7 +66,7 @@ export default class ThxDiscoverHome extends React.Component {
 
   showModal = () => {
     return (
-      <Modal className='scrolling' open={this.state.showModal}>
+      <Modal className='scrolling ' open={this.state.showModal}>
         <Modal.Header>세부정보</Modal.Header>
         <Modal.Content scrolling>
           <Table basic='very' selectable>
